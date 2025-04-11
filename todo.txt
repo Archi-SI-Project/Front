@@ -1,0 +1,29 @@
+Front:
+
+Modifier et supprimer un film
+
+Back:
+
+GET /movies
+GET /movies/id
+GET /movies/filter
+GET /cities
+GET /movie_theaters
+GET /sessions/movie_id: Fonction qui renvoie toutes les sessions qui ont un movie_id donné
+(quand authentifié) :
+POST /movies
+(PUT /movies/id)
+(DELETE /movies/id)
+POST /sessions
+
+Fonction filter : renvoie les films en fonction du filtre
+Paramètres de filtre : genre, duration, creationDate, searchTerm, city, sessionDate
+SELECT pour genre, duration, creationDate & searchTerm
+Pour city : chercher si il existe une Session avec le id_movie et la même ville
+Pour sessionDate : chercher si il existe une Session avec le id_movie et des dates correspondates
+Si sessionDate = past : valider si la date actuelle est avant starting_date
+Si sessionDate = current : valider si la date actuelle est entre starting_date et ending_date
+Si sessionDate = upcoming : valider si la date actuelle est après ending_date
+
+
+Empêcher une salle de cinéma de créer une session dans une autre salle de cinéma
