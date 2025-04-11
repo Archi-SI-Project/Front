@@ -136,10 +136,10 @@ const minMaxCreationDate = (creationDate: string) => {
 }
 
 export async function getMovies(): Promise<MovieDto[]> {
-    return MockData.map(movie => ({
-        ...movie,
-        creation_date: new Date(movie.creation_date),
-    }));
+    // return MockData.map(movie => ({
+    //     ...movie,
+    //     creation_date: new Date(movie.creation_date),
+    // }));
     try {
         const response = await axios.get(`${BASE_URL}/movies`);
         return response.data;
@@ -150,10 +150,10 @@ export async function getMovies(): Promise<MovieDto[]> {
 }
 
 export async function getMovieById(movieId: number): Promise<MovieDto> {
-    return MockData.map(movie => ({
-        ...movie,
-        creation_date: new Date(movie.creation_date),
-    })).find(movie => movie.id === movieId) as MovieDto;
+    // return MockData.map(movie => ({
+    //     ...movie,
+    //     creation_date: new Date(movie.creation_date),
+    // })).find(movie => movie.id === movieId) as MovieDto;
     try {
         const response = await axios.get(`${BASE_URL}/movies/${movieId}`);
         return response.data;
@@ -164,11 +164,11 @@ export async function getMovieById(movieId: number): Promise<MovieDto> {
 }
 
 export async function getMoviesWithFilter(city: string, sessionDate: string, genre: string, duration: string, creationDate: string, searchTerm: string): Promise<MovieDto[]> {
-    return MockData.map(movie => ({
-        ...movie,
-        creation_date: new Date(movie.creation_date),
-    }))
-        .filter(movie => filterMovies(movie, genre, duration, creationDate, searchTerm));
+    // return MockData.map(movie => ({
+    //     ...movie,
+    //     creation_date: new Date(movie.creation_date),
+    // }))
+    //     .filter(movie => filterMovies(movie, genre, duration, creationDate, searchTerm));
     try {
         const params: any = { };
         if (city) {
@@ -193,7 +193,7 @@ export async function getMoviesWithFilter(city: string, sessionDate: string, gen
             params.minCreationDate = minCreationDate;
             params.maxCreationDate = maxCreationDate;
         }
-        const response = await axios.get(`${BASE_URL}/movies/filter`, { params });
+        const response = await axios.get(`${BASE_URL}/movies/search`, { params });
         return response.data;
     } catch (error) {
         console.error('Error searching movies:', error);
@@ -242,7 +242,7 @@ export async function createSession(session: SessionCreationDto): Promise<void> 
 const MockDataCity: CityDto[] = [{ postalCode: "75001", name: "Paris" }, { postalCode: "69001", name: "Lyon" }, { postalCode: "13001", name: "Marseille" }, { postalCode: "31000", name: "Toulouse" }, { postalCode: "44000", name: "Nantes" }, { postalCode: "59000", name: "Lille" }, { postalCode: "67000", name: "Strasbourg" }, { postalCode: "33000", name: "Bordeaux" }, { postalCode: "34000", name: "Montpellier" }, { postalCode: "35000", name: "Rennes" }]
 
 export async function getCities(): Promise<CityDto[]> {
-    return MockDataCity;
+    // return MockDataCity;
     try {
         const response = await axios.get(`${BASE_URL}/cities`);
         return response.data;
@@ -259,7 +259,7 @@ const MockDataMovieTheaters: MovieTheaterDto[] = [
 ]; 
 
 export async function getMovieTheaters(): Promise<MovieTheaterDto[]> {
-    return MockDataMovieTheaters;
+    // return MockDataMovieTheaters;
     try {
         const response = await axios.get(`${BASE_URL}/movie_theaters`);
         return response.data;
