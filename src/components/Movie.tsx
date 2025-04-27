@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { createSession, getMovieById, getMovieTheaters, getSessionsByMovieId } from '../API';
 import MovieDto, { MovieCreationDto } from '../assets/MovieDto';
@@ -8,6 +8,7 @@ import { formatDate } from '../assets/utils';
 import MyDatePicker from './MyDatePicker';
 import MovieTheaterDto from '../assets/MovieTheaterDto';
 import { SessionCreationDto, SessionDefinitionDto } from '../assets/SessionDto';
+import { se } from 'react-day-picker/locale';
 
 const Movie: React.FC = () => {
     const { movie_id } = useParams<{ movie_id: string }>()
@@ -20,6 +21,11 @@ const Movie: React.FC = () => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const [sessionSetters, setSessionSetters] = useState<SessionDefinitionDto[]>([{ id_movie_theater: 0, starting_time: new Date(), ending_time: new Date() }]);
     const [sessions, setSessions] = useState<SessionCreationDto[]>([]);
+    const [searchParams, setSearchParams] = useState<URLSearchParams | undefined>(new URLSearchParams(window.location.search));
+
+    useEffect(() => {
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }, []);
 
     useEffect(() => {
         getMovieById(movieId)
@@ -80,7 +86,7 @@ const Movie: React.FC = () => {
     return (
         <div>
             <Button
-                onClick={() => window.location.href = '/'}
+                onClick={() => window.location.href = `/?${searchParams?.toString()}`}
                 startIcon={<ArrowBackIcon style={{ color: 'white', width: '30px', height: '30px', justifySelf: 'center' }} />}
                 style={{
                     position: 'fixed',

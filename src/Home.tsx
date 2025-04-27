@@ -86,6 +86,7 @@ const Home: React.FC = () => {
     useEffect(() => {
         getMovies()
             .then((data) => {
+                console.log(data);
                 setMoviesList(data);
             })
             .catch((error) => {
@@ -96,6 +97,7 @@ const Home: React.FC = () => {
     useEffect(() => {
         getMoviesWithFilter(city, sessionDate, genre, duration, creationDate, searchTerm)
             .then((data) => {
+                console.log(data);
                 setFilteredMovies(data);
             })
             .catch((error) => {
@@ -114,7 +116,14 @@ const Home: React.FC = () => {
     }, []);
 
     const goToMoviePage = (movieId: number) => {
-        window.location.href = `/movie/${movieId}`;
+        const params = new URLSearchParams();
+        if (city) params.set('city', city);
+        if (sessionDate) params.set('sessionDate', sessionDate);
+        if (genre) params.set('genre', genre);
+        if (duration) params.set('duration', duration);
+        if (creationDate) params.set('date', creationDate);
+        if (searchTerm) params.set('searchTerm', searchTerm);
+        window.location.href = `/movie/${movieId}?${params.toString()}`;
     };
 
     const updateURL = () => {

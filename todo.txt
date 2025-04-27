@@ -1,6 +1,7 @@
 Front:
 
 Modifier et supprimer un film
+Quand on revient sur la page principale après avoir été sur la page d'un film, récupérer les paramètres de filtre 
 
 Back:
 
@@ -20,10 +21,10 @@ Fonction filter : renvoie les films en fonction du filtre
 Paramètres de filtre : genre, duration, creationDate, searchTerm, city, sessionDate
 SELECT pour genre, duration, creationDate & searchTerm
 Pour city : chercher si il existe une Session avec le id_movie et la même ville
-Pour sessionDate : chercher si il existe une Session avec le id_movie et des dates correspondates
-Si sessionDate = past : valider si la date actuelle est avant starting_date
+Pour sessionDate : chercher si il existe une Session avec le id_movie et des dates correspondantes
+Si sessionDate = past : valider si la date actuelle est après ending_date
 Si sessionDate = current : valider si la date actuelle est entre starting_date et ending_date
-Si sessionDate = upcoming : valider si la date actuelle est après ending_date
+Si sessionDate = upcoming : valider si la date actuelle est avant starting_date
 
 
 Empêcher une salle de cinéma de créer une session dans une autre salle de cinéma

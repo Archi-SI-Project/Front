@@ -4,8 +4,18 @@ import SessionDto, { SessionCreationDto, SessionDefinitionDto } from './assets/S
 import CityDto from './assets/CityDto';
 import MockData from './MockData.json';
 import MovieTheaterDto from './assets/MovieTheaterDto';
+import createMovieDto from './assets/createMovieDto';
 
-const BASE_URL = 'https://your-backend-api.com/api';
+const BASE_URL = 'http://localhost:8080';
+
+const axiosInstance = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+    },
+    timeout: 5000, // Optional: Set a timeout for requests
+});
 
 const filterMovies = (movie: MovieDto, genre: string, duration: string, creationDate: string, searchTerm: string) => {
     let minDuration = '0';
@@ -141,8 +151,17 @@ export async function getMovies(): Promise<MovieDto[]> {
     //     creation_date: new Date(movie.creation_date),
     // }));
     try {
-        const response = await axios.get(`${BASE_URL}/movies`);
-        return response.data;
+        console.log('getMovies');
+        const response = await axiosInstance.get(`${BASE_URL}/movies`,
+            {
+                headers: {
+                Accept: 'application/json',
+                },
+            }
+        );
+        const res = response.data.map((movie: unknown) => createMovieDto(movie));
+        console.log(res);
+        return res;
     } catch (error) {
         console.error('Error fetching movies:', error);
         throw error;
@@ -155,8 +174,8 @@ export async function getMovieById(movieId: number): Promise<MovieDto> {
     //     creation_date: new Date(movie.creation_date),
     // })).find(movie => movie.id === movieId) as MovieDto;
     try {
-        const response = await axios.get(`${BASE_URL}/movies/${movieId}`);
-        return response.data;
+        const response = await axiosInstance.get(`${BASE_URL}/movies/${movieId}`);
+        return createMovieDto(response.data);
     } catch (error) {
         console.error(`Error fetching movie with ID ${movieId}:`, error);
         throw error;
@@ -193,10 +212,11 @@ export async function getMoviesWithFilter(city: string, sessionDate: string, gen
             params.minCreationDate = minCreationDate;
             params.maxCreationDate = maxCreationDate;
         }
-        const response = await axios.get(`${BASE_URL}/movies/search`, { params });
+        console.log('getMoviesWithFilter', params);
+        const response = await axiosInstance.get(`${BASE_URL}/movies/search`, { params });
         return response.data;
     } catch (error) {
-        console.error('Error searching movies:', error);
+        console.error('Error filtering movies:', error);
         throw error;
     }
 }
@@ -221,7 +241,7 @@ export async function addNewMovie(movie: MovieCreationDto, sessions: SessionDefi
 
 export async function createMovie(movie: MovieCreationDto): Promise<number> {
     try {
-        const response = await axios.post(`${BASE_URL}/movies`, movie);
+        const response = await axiosInstance.post(`${BASE_URL}/movies`, movie);
         return response.data.id;
     } catch (error) {
         console.error('Error creating movie:', error);
@@ -231,7 +251,7 @@ export async function createMovie(movie: MovieCreationDto): Promise<number> {
 
 export async function createSession(session: SessionCreationDto): Promise<void> {
     try {
-        const response = await axios.post(`${BASE_URL}/session`, session);
+        const response = await axiosInstance.post(`${BASE_URL}/session`, session);
         return response.data;
     } catch (error) {
         console.error('Error creating movie:', error);
@@ -242,9 +262,9 @@ export async function createSession(session: SessionCreationDto): Promise<void> 
 const MockDataCity: CityDto[] = [{ postalCode: "75001", name: "Paris" }, { postalCode: "69001", name: "Lyon" }, { postalCode: "13001", name: "Marseille" }, { postalCode: "31000", name: "Toulouse" }, { postalCode: "44000", name: "Nantes" }, { postalCode: "59000", name: "Lille" }, { postalCode: "67000", name: "Strasbourg" }, { postalCode: "33000", name: "Bordeaux" }, { postalCode: "34000", name: "Montpellier" }, { postalCode: "35000", name: "Rennes" }]
 
 export async function getCities(): Promise<CityDto[]> {
-    // return MockDataCity;
+    return MockDataCity;
     try {
-        const response = await axios.get(`${BASE_URL}/cities`);
+        const response = await axiosInstance.get(`${BASE_URL}/cities`);
         return response.data;
     } catch (error) {
         console.error('Error searching cities:', error);
@@ -259,9 +279,9 @@ const MockDataMovieTheaters: MovieTheaterDto[] = [
 ]; 
 
 export async function getMovieTheaters(): Promise<MovieTheaterDto[]> {
-    // return MockDataMovieTheaters;
+    return MockDataMovieTheaters;
     try {
-        const response = await axios.get(`${BASE_URL}/movie_theaters`);
+        const response = await axiosInstance.get(`${BASE_URL}/movie_theaters`);
         return response.data;
     } catch (error) {
         console.error('Error searching movie theaters:', error);
@@ -271,7 +291,7 @@ export async function getMovieTheaters(): Promise<MovieTheaterDto[]> {
 
 export async function getSessionsByMovieId(movieId: number): Promise<SessionDto[]> {
     try {
-        const response = await axios.get(`${BASE_URL}/sessions/${movieId}`);
+        const response = await axiosInstance.get(`${BASE_URL}/sessions/${movieId}`);
         return response.data;
     } catch (error) {
         console.error(`Error fetching sessions for movie with ID ${movieId}:`, error);

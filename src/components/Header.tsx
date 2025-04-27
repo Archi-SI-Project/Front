@@ -87,6 +87,8 @@ const Header: React.FC<HeaderProps> = ({ city, setCity, sessionDate, setSessionD
             <option value="horror">Horror</option>
             <option value="science fiction">Science Fiction</option>
             <option value="crime">Crime</option>
+            <option value="thriller">Thriller</option>
+            <option value="fantasy">Fantasy</option>
             </select>
 
             <select value={duration} onChange={(e) => setDuration(e.target.value)}>

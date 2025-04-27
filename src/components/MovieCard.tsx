@@ -59,7 +59,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
                 margin: 0,
                 padding: '10px'
             }}>
-                {movie.creation_date.getFullYear()} - {movie.duration}min
+                {movie.creation_date?.getFullYear()} - {movie.duration}min
             </p>
         </div>
     );
