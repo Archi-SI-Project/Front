@@ -7,7 +7,7 @@ import MovieTheaterDto from './assets/MovieTheaterDto';
 import createMovieDto from './assets/createMovieDto';
 
 const BASE_URL = 'http://localhost:8080';
-const BASE_URL_2 = 'http://localhost:8081';
+const BASE_URL_SERVICE2 = 'http://localhost:8081';
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
@@ -224,7 +224,7 @@ export async function getMoviesWithFilter(city: string, sessionDate: string, gen
 
 export async function createMovie(movie: MovieCreationDto): Promise<number> {
     try {
-        const response = await axiosInstance.post(`${BASE_URL_2}/movies/add`, movie);
+        const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/movies/add`, movie);
         return response.data.id;
     } catch (error) {
         console.error('Error creating movie:', error);
@@ -234,7 +234,7 @@ export async function createMovie(movie: MovieCreationDto): Promise<number> {
 
 export async function deleteMovie(movieId: number): Promise<void> {
     try {
-        const response = await axiosInstance.delete(`${BASE_URL_2}/movies/delete/${movieId}`);
+        const response = await axiosInstance.delete(`${BASE_URL_SERVICE2}/movies/delete/${movieId}`);
         return response.data;
     } catch (error) {
         console.error('Error deleting movie:', error);
@@ -245,7 +245,7 @@ export async function deleteMovie(movieId: number): Promise<void> {
 export async function updateMovie(movieId: number, movie: MovieDto): Promise<void> {
     try {
         console.log(movie);
-        const response = await axiosInstance.put(`${BASE_URL_2}/movies/update/${movieId}`, movie);
+        const response = await axiosInstance.put(`${BASE_URL_SERVICE2}/movies/update/${movieId}`, movie);
         console.log(response);
         return response.data;
     } catch (error) {
@@ -256,7 +256,7 @@ export async function updateMovie(movieId: number, movie: MovieDto): Promise<voi
 
 export async function createSession(session: SessionCreationDto): Promise<void> {
     try {
-        const response = await axiosInstance.post(`${BASE_URL_2}/session`, session);
+        const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/session/add`, session);
         return response.data;
     } catch (error) {
         console.error('Error creating movie:', error);
@@ -314,7 +314,8 @@ export async function getMovieTheaters(): Promise<MovieTheaterDto[]> {
 
 export async function getSessionsByMovieId(movieId: number): Promise<SessionDto[]> {
     try {
-        const response = await axiosInstance.get(`${BASE_URL}/sessions/${movieId}`);
+        const response = await axiosInstance.get(`${BASE_URL}/session/movie/${movieId}`);
+        console.log('getSessionsByMovieId', response.data);
         return response.data;
     } catch (error) {
         console.error(`Error fetching sessions for movie with ID ${movieId}:`, error);

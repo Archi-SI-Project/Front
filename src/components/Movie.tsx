@@ -156,7 +156,7 @@ const Movie: React.FC = () => {
 
             <h2>Sessions</h2>
             {sessions.length === 0 && <p>No sessions available for this movie.</p>}
-            {sessions.map((session => (
+            {Array.isArray(sessions) && sessions.map((session => (
                 <div>
                     <p><strong>Movie Theater:</strong> {movieTheatersList.find(theater => theater.id_movie_theater === session.id_movie_theater)?.name}</p>
                     <p><strong>Starting Time:</strong> {formatDate(session.starting_time)}</p>
