@@ -126,7 +126,7 @@ const Movie: React.FC = () => {
             minAge: parseInt(textFieldMinAge),
             synopsis: textFieldSynopsis,
             genre: textFieldGenre,
-            subtitleLanguage: "English",
+            subtitleLanguage: "EN",
         };
         updateMovie(movieId, movie);
     };
@@ -163,6 +163,7 @@ const Movie: React.FC = () => {
                     <p><strong>Movie Theater:</strong> {movieTheatersList.find(theater => theater.idMovieTheater === session.idMovieTheater)?.name}</p>
                     <p><strong>Starting Time:</strong> {formatDate(session.startingTime)}</p>
                     <p><strong>Ending Time:</strong> {formatDate(session.endingTime)}</p>
+                    <p style={{ marginBottom: '40px' }}></p>
                 </div>
             )))}
 
@@ -241,7 +242,7 @@ const Movie: React.FC = () => {
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
                                         setter === sessionSetter
-                                            ? { ...setter, startingDate: e }
+                                            ? { ...setter, startingTime: e }
                                             : setter
                                     )
                                 );
@@ -250,7 +251,7 @@ const Movie: React.FC = () => {
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
                                         setter === sessionSetter
-                                            ? { ...setter, endingDate: e }
+                                            ? { ...setter, endingTime: e }
                                             : setter
                                     )
                                 );

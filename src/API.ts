@@ -224,6 +224,20 @@ export async function getMoviesWithFilter(city: string, sessionDate: string, gen
 
 export async function createMovie(movie: MovieCreationDto): Promise<number> {
     try {
+        console.log(movie);
+        // const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/movies/add`, {
+        //     title: "best film 5",
+        //     duration: 4,
+        //     creationDate: "2023-10-01",
+        //     language: "EN",
+        //     director: "Max",
+        //     image: null,
+        //     mainActors: null,
+        //     minAge: 10,
+        //     synopsis: "nul",
+        //     genre: "ACTION",
+        //     subtitleLanguage: "EN"
+        // });
         const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/movies/add`, movie);
         return response.data.id;
     } catch (error) {
@@ -269,6 +283,19 @@ export async function addNewMovie(movie: MovieCreationDto, sessions: SessionDefi
         console.log(movie);
         console.log(sessions);
         const movieId = await createMovie(movie);
+        let movieExisting = null;
+        while (!movieExisting) {
+            try {
+                movieExisting = await getMovieById(movieId);
+            } catch (error) {
+                if (axios.isAxiosError(error) && error.response?.status === 404) {
+                    console.log(`Movie with ID ${movieId} not found, retrying...`);
+                    await new Promise((resolve) => setTimeout(resolve, 1000)); // Attendre 1 seconde avant de réessayer
+                } else {
+                    throw error; // Si une autre erreur survient, on la relance
+                }
+            }
+        }
         const movieSessions: SessionCreationDto[] = sessions.map(({ creationId, ...session }) => ({
             ...session,
             idMovie: movieId,

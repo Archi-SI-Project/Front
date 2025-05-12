@@ -38,7 +38,7 @@ const Home: React.FC = () => {
     const [textFieldGenre, setTextFieldGenre] = useState<string>("");
     const [sessionSetters, setSessionSetters] = useState<SessionDefinitionDto[]>([{ creationId: 0, idMovieTheater: 0, startingTime: new Date(), endingTime: new Date() }]);
     // const sessionSetters = useMemo(() => [
-    //     { movieTheater: "", startingDate: new Date(), endingDate: new Date() },
+    //     { movieTheater: "", startingTime: new Date(), endingTime: new Date() },
     // ], []);
 
     const handleOpenPopup = () => {
@@ -72,7 +72,7 @@ const Home: React.FC = () => {
         const movie: MovieCreationDto = {
             title: textFieldTitle,
             duration: parseInt(textFieldDuration),
-            creationDate: new Date(textFieldCreationDate),
+            creationDate: (new Date(textFieldCreationDate)).toISOString().split('T')[0],
             language: textFieldLanguage,
             director: textFieldDirector,
             image: textFieldImage,
@@ -80,9 +80,10 @@ const Home: React.FC = () => {
             minAge: parseInt(textFieldMinAge),
             synopsis: textFieldSynopsis,
             genre: textFieldGenre,
-            subtitleLanguage: "English",
+            subtitleLanguage: "EN",
         };
-        addNewMovie(movie, sessionSetters);
+        const realSessionSetters = sessionSetters.slice(0, -1);
+        addNewMovie(movie, realSessionSetters);
     };
 
     useEffect(() => {
@@ -353,7 +354,7 @@ const Home: React.FC = () => {
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
                                         setter.creationId === sessionSetter.creationId
-                                            ? { ...setter, startingDate: e }
+                                            ? { ...setter, startingTime: e }
                                             : setter
                                     )
                                 );
@@ -362,7 +363,7 @@ const Home: React.FC = () => {
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
                                         setter.creationId === sessionSetter.creationId
-                                            ? { ...setter, endingDate: e }
+                                            ? { ...setter, endingTime: e }
                                             : setter
                                     )
                                 );
