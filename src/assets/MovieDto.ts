@@ -2,25 +2,27 @@ export default interface MovieDto {
     id: number;
     title: string;
     duration: number;
-    creation_date: Date;
+    creationDate: string | Date;
     language: string;
     director: string;
     image: string;
-    main_actors: string;
-    min_age: number;
+    mainActors: string;
+    minAge: number;
     synopsis: string;
     genre: string;
+    subtitleLanguage: string;
 };
 
 export interface MovieCreationDto {
     title: string;
     duration: number;
-    creation_date: Date;
+    creationDate: string | Date;
     language: string;
     director: string;
     image: string;
-    main_actors: string;
-    min_age: number;
+    mainActors: string;
+    minAge: number;
     synopsis: string;
     genre: string;
+    subtitleLanguage: string;
 }

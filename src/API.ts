@@ -72,8 +72,8 @@ const filterMovies = (movie: MovieDto, genre: string, duration: string, creation
     const matchesGenre = genre ? movie.genre.toLowerCase() === genre : true;
     const matchesDuration = movie.duration >= (parseInt(minDuration)) &&
         movie.duration <= (parseInt(maxDuration));
-    const matchesYear = movie.creation_date.getFullYear() >= (parseInt(startYear)) &&
-        movie.creation_date.getFullYear() <= (parseInt(endYear));
+    const matchesYear = new Date(movie.creationDate).getFullYear() >= (parseInt(startYear)) &&
+        new Date(movie.creationDate).getFullYear() <= (parseInt(endYear));
     const matchesName = searchTerm ? movie.title.toLowerCase().includes(searchTerm.toLowerCase()) : true;
 
     // console.log('filterMovies', movie.title);
@@ -176,7 +176,7 @@ export async function getMovieById(movieId: number): Promise<MovieDto> {
     // })).find(movie => movie.id === movieId) as MovieDto;
     try {
         const response = await axiosInstance.get(`${BASE_URL}/movies/${movieId}`);
-        return createMovieDto(response.data);
+        return response.data;
     } catch (error) {
         console.error(`Error fetching movie with ID ${movieId}:`, error);
         throw error;
@@ -269,9 +269,9 @@ export async function addNewMovie(movie: MovieCreationDto, sessions: SessionDefi
         console.log(movie);
         console.log(sessions);
         const movieId = await createMovie(movie);
-        const movieSessions: SessionCreationDto[] = sessions.map(({ creation_id, ...session }) => ({
+        const movieSessions: SessionCreationDto[] = sessions.map(({ creationId, ...session }) => ({
             ...session,
-            id_movie: movieId,
+            idMovie: movieId,
         }));
         for (const session of movieSessions) {
             await createSession(session);
@@ -296,9 +296,9 @@ export async function getCities(): Promise<CityDto[]> {
 }
 
 const MockDataMovieTheaters: MovieTheaterDto[] = [
-    { id_movie_theater: 1, city_id: 1, address: "123 Main St", name: "Cineplex" },
-    { id_movie_theater: 2, city_id: 2, address: "456 Elm St", name: "Movie World" },
-    { id_movie_theater: 3, city_id: 3, address: "789 Oak St", name: "Film House" },
+    { idMovieTheater: 1, cityId: 1, address: "123 Main St", name: "Cineplex" },
+    { idMovieTheater: 2, cityId: 2, address: "456 Elm St", name: "Movie World" },
+    { idMovieTheater: 3, cityId: 3, address: "789 Oak St", name: "Film House" },
 ]; 
 
 export async function getMovieTheaters(): Promise<MovieTheaterDto[]> {

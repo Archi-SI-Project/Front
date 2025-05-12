@@ -1,21 +1,21 @@
 export default interface SessionDto {
     id: number;
-    starting_time: Date;
-    ending_time: Date;
-    id_movie: number;
-    id_movie_theater: number;
+    startingTime: Date;
+    endingTime: Date;
+    idMovie: number;
+    idMovieTheater: number;
 }
 
 export interface SessionCreationDto {
-    starting_time: Date;
-    ending_time: Date;
-    id_movie: number;
-    id_movie_theater: number;
+    startingTime: Date;
+    endingTime: Date;
+    idMovie: number;
+    idMovieTheater: number;
 }
 
 export interface SessionDefinitionDto {
-    creation_id: number;
-    starting_time: Date;
-    ending_time: Date;
-    id_movie_theater: number;
+    creationId: number;
+    startingTime: Date;
+    endingTime: Date;
+    idMovieTheater: number;
 }

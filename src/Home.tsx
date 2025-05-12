@@ -36,7 +36,7 @@ const Home: React.FC = () => {
     const [textFieldMinAge, setTextFieldMinAge] = useState<string>("");
     const [textFieldSynopsis, setTextFieldSynopsis] = useState<string>("");
     const [textFieldGenre, setTextFieldGenre] = useState<string>("");
-    const [sessionSetters, setSessionSetters] = useState<SessionDefinitionDto[]>([{ creation_id: 0, id_movie_theater: 0, starting_time: new Date(), ending_time: new Date() }]);
+    const [sessionSetters, setSessionSetters] = useState<SessionDefinitionDto[]>([{ creationId: 0, idMovieTheater: 0, startingTime: new Date(), endingTime: new Date() }]);
     // const sessionSetters = useMemo(() => [
     //     { movieTheater: "", startingDate: new Date(), endingDate: new Date() },
     // ], []);
@@ -57,13 +57,13 @@ const Home: React.FC = () => {
         setTextFieldMinAge("");
         setTextFieldSynopsis("");
         setTextFieldGenre("");
-        setSessionSetters([{ creation_id: 0, id_movie_theater: 0, starting_time: new Date(), ending_time: new Date() }]);
+        setSessionSetters([{ creationId: 0, idMovieTheater: 0, startingTime: new Date(), endingTime: new Date() }]);
     };
 
     const addSession = () => {
         setSessionSetters([
             ...sessionSetters,
-            { creation_id: sessionSetters.length, id_movie_theater: 0, starting_time: new Date(), ending_time: new Date() }
+            { creationId: sessionSetters.length, idMovieTheater: 0, startingTime: new Date(), endingTime: new Date() }
         ]);
     }
 
@@ -72,14 +72,15 @@ const Home: React.FC = () => {
         const movie: MovieCreationDto = {
             title: textFieldTitle,
             duration: parseInt(textFieldDuration),
-            creation_date: new Date(textFieldCreationDate),
+            creationDate: new Date(textFieldCreationDate),
             language: textFieldLanguage,
             director: textFieldDirector,
             image: textFieldImage,
-            main_actors: textFieldMainActors,
-            min_age: parseInt(textFieldMinAge),
+            mainActors: textFieldMainActors,
+            minAge: parseInt(textFieldMinAge),
             synopsis: textFieldSynopsis,
             genre: textFieldGenre,
+            subtitleLanguage: "English",
         };
         addNewMovie(movie, sessionSetters);
     };
@@ -329,13 +330,13 @@ const Home: React.FC = () => {
                     {sessionSetters.map((sessionSetter) => (
                         <>
                         <select
-                            value={sessionSetter.id_movie_theater}
+                            value={sessionSetter.idMovieTheater}
                             onChange={(e) => {
                                 const updatedValue = Number(e.target.value);
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
-                                        setter.creation_id === sessionSetter.creation_id
-                                            ? { ...setter, id_movie_theater: updatedValue }
+                                        setter.creationId === sessionSetter.creationId
+                                            ? { ...setter, idMovieTheater: updatedValue }
                                             : setter
                                     )
                                 );
@@ -343,24 +344,24 @@ const Home: React.FC = () => {
                         >
                             <option value={0}>Select City</option>
                             {movieTheatersList.map((movieTheater) => (
-                                <option key={movieTheater.id_movie_theater} value={movieTheater.id_movie_theater}>
+                                <option key={movieTheater.idMovieTheater} value={movieTheater.idMovieTheater}>
                                     {movieTheater.name} ({movieTheater.address})
                                 </option>
                             ))}
                         </select>
-                        <MyDatePicker date={sessionSetter.starting_time} changeDate={(e) => {
+                        <MyDatePicker date={sessionSetter.startingTime} changeDate={(e) => {
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
-                                        setter.creation_id === sessionSetter.creation_id
+                                        setter.creationId === sessionSetter.creationId
                                             ? { ...setter, startingDate: e }
                                             : setter
                                     )
                                 );
                             }} />
-                        <MyDatePicker date={sessionSetter.ending_time} changeDate={(e) => {
+                        <MyDatePicker date={sessionSetter.endingTime} changeDate={(e) => {
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
-                                        setter.creation_id === sessionSetter.creation_id
+                                        setter.creationId === sessionSetter.creationId
                                             ? { ...setter, endingDate: e }
                                             : setter
                                     )

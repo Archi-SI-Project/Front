@@ -31,7 +31,7 @@ const Movie: React.FC = () => {
     const [textFieldMinAge, setTextFieldMinAge] = useState<string>("");
     const [textFieldSynopsis, setTextFieldSynopsis] = useState<string>("");
     const [textFieldGenre, setTextFieldGenre] = useState<string>("");
-    const [sessionSetters, setSessionSetters] = useState<SessionDefinitionDto[]>([{ creation_id: 0, id_movie_theater: 0, starting_time: new Date(), ending_time: new Date() }]);
+    const [sessionSetters, setSessionSetters] = useState<SessionDefinitionDto[]>([{ creationId: 0, idMovieTheater: 0, startingTime: new Date(), endingTime: new Date() }]);
     const [sessions, setSessions] = useState<SessionCreationDto[]>([]);
     const [searchParams, setSearchParams] = useState<URLSearchParams | undefined>(new URLSearchParams(window.location.search));
 
@@ -51,19 +51,19 @@ const Movie: React.FC = () => {
 
     const handleCloseSessionPopup = () => {
         setIsSessionPopupOpen(false);
-        setSessionSetters([{ creation_id: 0, id_movie_theater: 0, starting_time: new Date(), ending_time: new Date() }]);
+        setSessionSetters([{ creationId: 0, idMovieTheater: 0, startingTime: new Date(), endingTime: new Date() }]);
     };
 
     const handleOpenModifyPopup = () => {
         setTextFieldTitle(movie?.title || "");
         setTextFieldDuration(movie?.duration.toString() || "");
-        setTextFieldCreationDate(new Date(movie?.creation_date || ""));
+        setTextFieldCreationDate(new Date(movie?.creationDate || ""));
         setTextFieldLanguage(movie?.language || "");
         setTextFieldDirector(movie?.director || "");
         setTextFieldImage(movie?.image || "");
         // setTextFieldMainActors(movie?.main_actors?.join(', ') || "");
-        setTextFieldMainActors(movie?.main_actors || "");
-        setTextFieldMinAge(movie?.min_age.toString() || "");
+        setTextFieldMainActors(movie?.mainActors || "");
+        setTextFieldMinAge(movie?.minAge.toString() || "");
         setTextFieldSynopsis(movie?.synopsis || "");
         setTextFieldGenre(movie?.genre || "");
         setIsModifyPopupOpen(true);
@@ -76,7 +76,7 @@ const Movie: React.FC = () => {
     const addSession = () => {
         setSessionSetters([
             ...sessionSetters,
-            { creation_id: sessionSetters.length, id_movie_theater: 0, starting_time: new Date(), ending_time: new Date() }
+            { creationId: sessionSetters.length, idMovieTheater: 0, startingTime: new Date(), endingTime: new Date() }
         ]);
     }
 
@@ -84,7 +84,7 @@ const Movie: React.FC = () => {
         handleCloseSessionPopup();
         const sessions: SessionCreationDto[] = sessionSetters.map(sessionSetter => ({
             ...sessionSetter,
-            id_movie: movieId,
+            idMovie: movieId,
         }));
         for (const session of sessions) {
             createSession(session);
@@ -104,6 +104,7 @@ const Movie: React.FC = () => {
     useEffect(() => {
         getSessionsByMovieId(movieId)
             .then((data) => {
+                console.log(data);
                 setSessions(data);
             })
             .catch((error) => {
@@ -117,14 +118,15 @@ const Movie: React.FC = () => {
             id: movieId,
             title: textFieldTitle,
             duration: parseInt(textFieldDuration),
-            creation_date: new Date(textFieldCreationDate),
+            creationDate: new Date(textFieldCreationDate),
             language: textFieldLanguage,
             director: textFieldDirector,
             image: textFieldImage,
-            main_actors: textFieldMainActors,
-            min_age: parseInt(textFieldMinAge),
+            mainActors: textFieldMainActors,
+            minAge: parseInt(textFieldMinAge),
             synopsis: textFieldSynopsis,
             genre: textFieldGenre,
+            subtitleLanguage: "English",
         };
         updateMovie(movieId, movie);
     };
@@ -149,18 +151,18 @@ const Movie: React.FC = () => {
             />
             <h1>{movie.title}</h1>
             <img src={movie.image} alt={movie.title} style={{ width: 'auto' }} />
-            <p><strong>Release Date:</strong> {formatDate(movie.creation_date)}</p>
+            <p><strong>Release Date:</strong> {formatDate(movie.creationDate)}</p>
             <p><strong>Genre:</strong> {movie.genre}</p>
             <p><strong>Duration:</strong> {movie.duration} min</p>
             <p><strong>Description:</strong> {movie.synopsis}</p>
 
             <h2>Sessions</h2>
             {sessions.length === 0 && <p>No sessions available for this movie.</p>}
-            {Array.isArray(sessions) && sessions.map((session => (
+            {sessions && sessions.map((session => (
                 <div>
-                    <p><strong>Movie Theater:</strong> {movieTheatersList.find(theater => theater.id_movie_theater === session.id_movie_theater)?.name}</p>
-                    <p><strong>Starting Time:</strong> {formatDate(session.starting_time)}</p>
-                    <p><strong>Ending Time:</strong> {formatDate(session.ending_time)}</p>
+                    <p><strong>Movie Theater:</strong> {movieTheatersList.find(theater => theater.idMovieTheater === session.idMovieTheater)?.name}</p>
+                    <p><strong>Starting Time:</strong> {formatDate(session.startingTime)}</p>
+                    <p><strong>Ending Time:</strong> {formatDate(session.endingTime)}</p>
                 </div>
             )))}
 
@@ -217,7 +219,7 @@ const Movie: React.FC = () => {
                     {sessionSetters.map((sessionSetter) => (
                         <>
                             <select
-                                value={sessionSetter.id_movie_theater}
+                                value={sessionSetter.idMovieTheater}
                                 onChange={(e) => {
                                     setSessionSetters((prev) =>
                                         prev.map((setter) =>
@@ -230,12 +232,12 @@ const Movie: React.FC = () => {
                             >
                                 <option value={0}>Select City</option>
                                 {movieTheatersList.map((movieTheater) => (
-                                    <option key={movieTheater.id_movie_theater} value={movieTheater.id_movie_theater}>
+                                    <option key={movieTheater.idMovieTheater} value={movieTheater.idMovieTheater}>
                                         {movieTheater.name} ({movieTheater.address})
                                     </option>
                                 ))}
                             </select>
-                            <MyDatePicker date={sessionSetter.starting_time} changeDate={(e) => {
+                            <MyDatePicker date={sessionSetter.startingTime} changeDate={(e) => {
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
                                         setter === sessionSetter
@@ -244,7 +246,7 @@ const Movie: React.FC = () => {
                                     )
                                 );
                             }} />
-                            <MyDatePicker date={sessionSetter.ending_time} changeDate={(e) => {
+                            <MyDatePicker date={sessionSetter.endingTime} changeDate={(e) => {
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
                                         setter === sessionSetter
