@@ -6,7 +6,7 @@ export default interface MovieDto {
     language: string;
     director: string;
     image: string;
-    main_actors: string[];
+    main_actors: string;
     min_age: number;
     synopsis: string;
     genre: string;
@@ -19,7 +19,7 @@ export interface MovieCreationDto {
     language: string;
     director: string;
     image: string;
-    main_actors: string[];
+    main_actors: string;
     min_age: number;
     synopsis: string;
     genre: string;

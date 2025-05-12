@@ -14,6 +14,7 @@ export interface SessionCreationDto {
 }
 
 export interface SessionDefinitionDto {
+    creation_id: number;
     starting_time: Date;
     ending_time: Date;
     id_movie_theater: number;
