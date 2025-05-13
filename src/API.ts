@@ -4,7 +4,6 @@ import SessionDto, { SessionCreationDto, SessionDefinitionDto } from './assets/S
 import CityDto from './assets/CityDto';
 import MockData from './MockData.json';
 import MovieTheaterDto from './assets/MovieTheaterDto';
-import createMovieDto from './assets/createMovieDto';
 
 const BASE_URL = 'http://localhost:8080';
 const BASE_URL_SERVICE2 = 'http://localhost:8081';
@@ -160,7 +159,7 @@ export async function getMovies(): Promise<MovieDto[]> {
                 },
             }
         );
-        const res = response.data.map((movie: unknown) => createMovieDto(movie));
+        const res = response.data.map((movie: unknown) => movie);
         console.log(res);
         return res;
     } catch (error) {
