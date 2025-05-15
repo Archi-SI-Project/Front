@@ -5,10 +5,10 @@ import CityDto from './assets/CityDto';
 import MockData from './MockData.json';
 import MovieTheaterDto from './assets/MovieTheaterDto';
 
-const BASE_URL = 'http://localhost:8082';
+const BASE_URL = '/api';
 
 const axiosInstance = axios.create({
-    baseURL: BASE_URL,
+    baseURL: '',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
