@@ -56,7 +56,7 @@ const Movie: React.FC = () => {
 
     const handleOpenModifyPopup = () => {
         setTextFieldTitle(movie?.title || "");
-        setTextFieldDuration(movie?.duration.toString() || "");
+        setTextFieldDuration(movie?.duration?.toString() || "");
         console.log(movie?.creationDate);
         setTextFieldCreationDate(new Date(movie?.creationDate || ""));
         setTextFieldLanguage(movie?.language || "");
@@ -64,7 +64,7 @@ const Movie: React.FC = () => {
         setTextFieldImage(movie?.image || "");
         // setTextFieldMainActors(movie?.main_actors?.join(', ') || "");
         setTextFieldMainActors(movie?.mainActors || "");
-        setTextFieldMinAge(movie?.minAge.toString() || "");
+        setTextFieldMinAge(movie?.minAge?.toString() || "");
         setTextFieldSynopsis(movie?.synopsis || "");
         setTextFieldGenre(movie?.genre || "");
         setIsModifyPopupOpen(true);
