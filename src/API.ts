@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import MovieDto, { MovieCreationDto } from './assets/MovieDto';
 import SessionDto, { SessionAddToDbDto, SessionCreationDto, SessionDefinitionDto } from './assets/SessionDto';
 import CityDto from './assets/CityDto';
@@ -237,7 +237,9 @@ export async function createMovie(movie: MovieCreationDto): Promise<number> {
         //     genre: "ACTION",
         //     subtitleLanguage: "EN"
         // });
-        const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/movies/add`, movie);
+        const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/movies/add`, movie,
+            { headers: { 'Authorization': `Basic ${localStorage.getItem('auth')}` } },
+        );
         console.log(response);
         return response.data;
     } catch (error) {
@@ -248,7 +250,9 @@ export async function createMovie(movie: MovieCreationDto): Promise<number> {
 
 export async function deleteMovie(movieId: number): Promise<void> {
     try {
-        const response = await axiosInstance.delete(`${BASE_URL_SERVICE2}/movies/delete/${movieId}`);
+        const response = await axiosInstance.delete(`${BASE_URL_SERVICE2}/movies/delete/${movieId}`,
+            { headers: { 'Authorization': `Basic ${localStorage.getItem('auth')}` } },
+        );
         return response.data;
     } catch (error) {
         console.error('Error deleting movie:', error);
@@ -259,7 +263,9 @@ export async function deleteMovie(movieId: number): Promise<void> {
 export async function updateMovie(movieId: number, movie: MovieDto): Promise<void> {
     try {
         console.log(movie);
-        const response = await axiosInstance.put(`${BASE_URL_SERVICE2}/movies/update/${movieId}`, movie);
+        const response = await axiosInstance.put(`${BASE_URL_SERVICE2}/movies/update/${movieId}`, movie,
+            { headers: { 'Authorization': `Basic ${localStorage.getItem('auth')}` } },
+        );
         console.log(response);
         return response.data;
     } catch (error) {
@@ -277,7 +283,9 @@ export async function createSession(session: SessionCreationDto): Promise<void> 
             idMovieTheater: { id: session.idMovieTheater }
         };
         console.log(sessionTransformed);
-        const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/session/add`, sessionTransformed);
+        const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/session/add`, sessionTransformed,
+            { headers: { 'Authorization': `Basic ${localStorage.getItem('auth')}` } },
+        );
         return response.data;
     } catch (error) {
         console.error('Error creating movie:', error);
@@ -356,6 +364,21 @@ export async function getSessionsByMovieId(movieId: number): Promise<SessionDto[
         return response.data;
     } catch (error) {
         console.error(`Error fetching sessions for movie with ID ${movieId}:`, error);
+        throw error;
+    }
+}
+
+export async function getUsers(credentials: string): Promise<AxiosResponse<any, any>> {
+    try {
+        // Utilise axios.get pour une URL absolue, comme ta requête manuelle
+        const response = await axios.get(
+            `${BASE_URL_SERVICE2}/users`,
+            { headers: { 'Authorization': `Basic ${credentials}` } }
+        );
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.error('Error fetching users:', error);
         throw error;
     }
 }
