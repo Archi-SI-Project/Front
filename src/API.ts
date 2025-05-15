@@ -6,7 +6,6 @@ import MockData from './MockData.json';
 import MovieTheaterDto from './assets/MovieTheaterDto';
 
 const BASE_URL = 'http://localhost:8082';
-const BASE_URL_SERVICE2 = 'http://localhost:8082';
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
@@ -224,7 +223,7 @@ export async function getMoviesWithFilter(city: string, sessionDate: string, gen
 export async function createMovie(movie: MovieCreationDto): Promise<number> {
     try {
         console.log(movie);
-        // const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/movies/add`, {
+        // const response = await axiosInstance.post(`${BASE_URL}/movies/add`, {
         //     title: "best film 5",
         //     duration: 4,
         //     creationDate: "2023-10-01",
@@ -237,7 +236,7 @@ export async function createMovie(movie: MovieCreationDto): Promise<number> {
         //     genre: "ACTION",
         //     subtitleLanguage: "EN"
         // });
-        const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/movies/add`, movie,
+        const response = await axiosInstance.post(`${BASE_URL}/movies/add`, movie,
             { headers: { 'Authorization': `Basic ${localStorage.getItem('auth')}` } },
         );
         console.log(response);
@@ -250,7 +249,7 @@ export async function createMovie(movie: MovieCreationDto): Promise<number> {
 
 export async function deleteMovie(movieId: number): Promise<void> {
     try {
-        const response = await axiosInstance.delete(`${BASE_URL_SERVICE2}/movies/delete/${movieId}`,
+        const response = await axiosInstance.delete(`${BASE_URL}/movies/delete/${movieId}`,
             { headers: { 'Authorization': `Basic ${localStorage.getItem('auth')}` } },
         );
         return response.data;
@@ -263,7 +262,7 @@ export async function deleteMovie(movieId: number): Promise<void> {
 export async function updateMovie(movieId: number, movie: MovieDto): Promise<void> {
     try {
         console.log(movie);
-        const response = await axiosInstance.put(`${BASE_URL_SERVICE2}/movies/update/${movieId}`, movie,
+        const response = await axiosInstance.put(`${BASE_URL}/movies/update/${movieId}`, movie,
             { headers: { 'Authorization': `Basic ${localStorage.getItem('auth')}` } },
         );
         console.log(response);
@@ -283,7 +282,7 @@ export async function createSession(session: SessionCreationDto): Promise<void> 
             idMovieTheater: { id: session.idMovieTheater }
         };
         console.log(sessionTransformed);
-        const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/session/add`, sessionTransformed,
+        const response = await axiosInstance.post(`${BASE_URL}/session/add`, sessionTransformed,
             { headers: { 'Authorization': `Basic ${localStorage.getItem('auth')}` } },
         );
         return response.data;
@@ -372,7 +371,7 @@ export async function getUsers(credentials: string): Promise<AxiosResponse<any, 
     try {
         // Utilise axios.get pour une URL absolue, comme ta requête manuelle
         const response = await axios.get(
-            `${BASE_URL_SERVICE2}/users`,
+            `${BASE_URL}/users`,
             { headers: { 'Authorization': `Basic ${credentials}` } }
         );
         console.log(response);
