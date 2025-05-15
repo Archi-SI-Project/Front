@@ -5,8 +5,8 @@ import CityDto from './assets/CityDto';
 import MockData from './MockData.json';
 import MovieTheaterDto from './assets/MovieTheaterDto';
 
-const BASE_URL = 'http://localhost:8080';
-const BASE_URL_SERVICE2 = 'http://localhost:8081';
+const BASE_URL = 'http://localhost:8082';
+const BASE_URL_SERVICE2 = 'http://localhost:8082';
 
 const axiosInstance = axios.create({
     baseURL: BASE_URL,
