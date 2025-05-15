@@ -1,11 +1,21 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import MovieDto, { MovieCreationDto } from './assets/MovieDto';
-import SessionDto, { SessionCreationDto, SessionDefinitionDto } from './assets/SessionDto';
+import SessionDto, { SessionAddToDbDto, SessionCreationDto, SessionDefinitionDto } from './assets/SessionDto';
 import CityDto from './assets/CityDto';
 import MockData from './MockData.json';
 import MovieTheaterDto from './assets/MovieTheaterDto';
 
-const BASE_URL = 'https://your-backend-api.com/api';
+const BASE_URL = 'http://localhost:8080';
+const BASE_URL_SERVICE2 = 'http://localhost:8081';
+
+const axiosInstance = axios.create({
+    baseURL: BASE_URL,
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+    },
+    timeout: 5000, // Optional: Set a timeout for requests
+});
 
 const filterMovies = (movie: MovieDto, genre: string, duration: string, creationDate: string, searchTerm: string) => {
     let minDuration = '0';
@@ -61,8 +71,8 @@ const filterMovies = (movie: MovieDto, genre: string, duration: string, creation
     const matchesGenre = genre ? movie.genre.toLowerCase() === genre : true;
     const matchesDuration = movie.duration >= (parseInt(minDuration)) &&
         movie.duration <= (parseInt(maxDuration));
-    const matchesYear = movie.creation_date.getFullYear() >= (parseInt(startYear)) &&
-        movie.creation_date.getFullYear() <= (parseInt(endYear));
+    const matchesYear = new Date(movie.creationDate).getFullYear() >= (parseInt(startYear)) &&
+        new Date(movie.creationDate).getFullYear() <= (parseInt(endYear));
     const matchesName = searchTerm ? movie.title.toLowerCase().includes(searchTerm.toLowerCase()) : true;
 
     // console.log('filterMovies', movie.title);
@@ -141,8 +151,17 @@ export async function getMovies(): Promise<MovieDto[]> {
     //     creation_date: new Date(movie.creation_date),
     // }));
     try {
-        const response = await axios.get(`${BASE_URL}/movies`);
-        return response.data;
+        console.log('getMovies');
+        const response = await axiosInstance.get(`${BASE_URL}/movies`,
+            {
+                headers: {
+                Accept: 'application/json',
+                },
+            }
+        );
+        const res = response.data.map((movie: unknown) => movie);
+        console.log(res);
+        return res;
     } catch (error) {
         console.error('Error fetching movies:', error);
         throw error;
@@ -155,7 +174,7 @@ export async function getMovieById(movieId: number): Promise<MovieDto> {
     //     creation_date: new Date(movie.creation_date),
     // })).find(movie => movie.id === movieId) as MovieDto;
     try {
-        const response = await axios.get(`${BASE_URL}/movies/${movieId}`);
+        const response = await axiosInstance.get(`${BASE_URL}/movies/${movieId}`);
         return response.data;
     } catch (error) {
         console.error(`Error fetching movie with ID ${movieId}:`, error);
@@ -193,10 +212,83 @@ export async function getMoviesWithFilter(city: string, sessionDate: string, gen
             params.minCreationDate = minCreationDate;
             params.maxCreationDate = maxCreationDate;
         }
-        const response = await axios.get(`${BASE_URL}/movies/search`, { params });
+        console.log('getMoviesWithFilter', params);
+        const response = await axiosInstance.get(`${BASE_URL}/movies/search`, { params });
         return response.data;
     } catch (error) {
-        console.error('Error searching movies:', error);
+        console.error('Error filtering movies:', error);
+        throw error;
+    }
+}
+
+export async function createMovie(movie: MovieCreationDto): Promise<number> {
+    try {
+        console.log(movie);
+        // const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/movies/add`, {
+        //     title: "best film 5",
+        //     duration: 4,
+        //     creationDate: "2023-10-01",
+        //     language: "EN",
+        //     director: "Max",
+        //     image: null,
+        //     mainActors: null,
+        //     minAge: 10,
+        //     synopsis: "nul",
+        //     genre: "ACTION",
+        //     subtitleLanguage: "EN"
+        // });
+        const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/movies/add`, movie,
+            { headers: { 'Authorization': `Basic ${localStorage.getItem('auth')}` } },
+        );
+        console.log(response);
+        return response.data;
+    } catch (error) {
+        console.error('Error creating movie:', error);
+        throw error;
+    }
+}
+
+export async function deleteMovie(movieId: number): Promise<void> {
+    try {
+        const response = await axiosInstance.delete(`${BASE_URL_SERVICE2}/movies/delete/${movieId}`,
+            { headers: { 'Authorization': `Basic ${localStorage.getItem('auth')}` } },
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting movie:', error);
+        throw error;
+    }
+}
+
+export async function updateMovie(movieId: number, movie: MovieDto): Promise<void> {
+    try {
+        console.log(movie);
+        const response = await axiosInstance.put(`${BASE_URL_SERVICE2}/movies/update/${movieId}`, movie,
+            { headers: { 'Authorization': `Basic ${localStorage.getItem('auth')}` } },
+        );
+        console.log(response);
+        return response.data;
+    } catch (error) {
+        console.error('Error updating movie:', error);
+        throw error;
+    }
+}
+
+export async function createSession(session: SessionCreationDto): Promise<void> {
+    try {
+        console.log(session);
+        const sessionTransformed: SessionAddToDbDto = {
+            ...session,
+            idMovie: { id: session.idMovie },
+            idMovieTheater: { id: session.idMovieTheater }
+        };
+        console.log(sessionTransformed);
+        const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/session/add`, sessionTransformed,
+            { headers: { 'Authorization': `Basic ${localStorage.getItem('auth')}` } },
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Error creating movie:', error);
         throw error;
     }
 }
@@ -206,9 +298,25 @@ export async function addNewMovie(movie: MovieCreationDto, sessions: SessionDefi
         console.log(movie);
         console.log(sessions);
         const movieId = await createMovie(movie);
-        const movieSessions: SessionCreationDto[] = sessions.map(session => ({
+        let movieExisting = null;
+        while (!movieExisting) {
+            try {
+                console.log('getMovieById', movieId);
+                movieExisting = await getMovieById(movieId);
+            } catch (error) {
+                if (axios.isAxiosError(error) && error.response?.status === 404) {
+                    console.log(`Movie with ID ${movieId} not found, retrying...`);
+                    await new Promise((resolve) => setTimeout(resolve, 1000)); // Attendre 1 seconde avant de réessayer
+                } else {
+                    throw error; // Si une autre erreur survient, on la relance
+                }
+            }
+        }
+        console.log('movieExisting', movieExisting);
+        console.log('movieId', movieId);
+        const movieSessions: SessionCreationDto[] = sessions.map(({ creationId, ...session }) => ({
             ...session,
-            id_movie: movieId,
+            idMovie: movieId,
         }));
         for (const session of movieSessions) {
             await createSession(session);
@@ -219,32 +327,12 @@ export async function addNewMovie(movie: MovieCreationDto, sessions: SessionDefi
     }
 }
 
-export async function createMovie(movie: MovieCreationDto): Promise<number> {
-    try {
-        const response = await axios.post(`${BASE_URL}/movies`, movie);
-        return response.data.id;
-    } catch (error) {
-        console.error('Error creating movie:', error);
-        throw error;
-    }
-}
-
-export async function createSession(session: SessionCreationDto): Promise<void> {
-    try {
-        const response = await axios.post(`${BASE_URL}/session`, session);
-        return response.data;
-    } catch (error) {
-        console.error('Error creating movie:', error);
-        throw error;
-    }
-}
-
 const MockDataCity: CityDto[] = [{ postalCode: "75001", name: "Paris" }, { postalCode: "69001", name: "Lyon" }, { postalCode: "13001", name: "Marseille" }, { postalCode: "31000", name: "Toulouse" }, { postalCode: "44000", name: "Nantes" }, { postalCode: "59000", name: "Lille" }, { postalCode: "67000", name: "Strasbourg" }, { postalCode: "33000", name: "Bordeaux" }, { postalCode: "34000", name: "Montpellier" }, { postalCode: "35000", name: "Rennes" }]
 
 export async function getCities(): Promise<CityDto[]> {
-    // return MockDataCity;
+    return MockDataCity;
     try {
-        const response = await axios.get(`${BASE_URL}/cities`);
+        const response = await axiosInstance.get(`${BASE_URL}/cities`);
         return response.data;
     } catch (error) {
         console.error('Error searching cities:', error);
@@ -253,15 +341,15 @@ export async function getCities(): Promise<CityDto[]> {
 }
 
 const MockDataMovieTheaters: MovieTheaterDto[] = [
-    { id_movie_theater: 1, city_id: 1, address: "123 Main St", name: "Cineplex" },
-    { id_movie_theater: 2, city_id: 2, address: "456 Elm St", name: "Movie World" },
-    { id_movie_theater: 3, city_id: 3, address: "789 Oak St", name: "Film House" },
+    { idMovieTheater: 1, cityId: 1, address: "123 Main St", name: "Cineplex" },
+    { idMovieTheater: 2, cityId: 2, address: "456 Elm St", name: "Movie World" },
+    { idMovieTheater: 3, cityId: 3, address: "789 Oak St", name: "Film House" },
 ]; 
 
 export async function getMovieTheaters(): Promise<MovieTheaterDto[]> {
-    // return MockDataMovieTheaters;
+    return MockDataMovieTheaters;
     try {
-        const response = await axios.get(`${BASE_URL}/movie_theaters`);
+        const response = await axiosInstance.get(`${BASE_URL}/movie_theaters`);
         return response.data;
     } catch (error) {
         console.error('Error searching movie theaters:', error);
@@ -271,10 +359,26 @@ export async function getMovieTheaters(): Promise<MovieTheaterDto[]> {
 
 export async function getSessionsByMovieId(movieId: number): Promise<SessionDto[]> {
     try {
-        const response = await axios.get(`${BASE_URL}/sessions/${movieId}`);
+        const response = await axiosInstance.get(`${BASE_URL}/session/movie/${movieId}`);
+        console.log('getSessionsByMovieId', response.data);
         return response.data;
     } catch (error) {
         console.error(`Error fetching sessions for movie with ID ${movieId}:`, error);
+        throw error;
+    }
+}
+
+export async function getUsers(credentials: string): Promise<AxiosResponse<any, any>> {
+    try {
+        // Utilise axios.get pour une URL absolue, comme ta requête manuelle
+        const response = await axios.get(
+            `${BASE_URL_SERVICE2}/users`,
+            { headers: { 'Authorization': `Basic ${credentials}` } }
+        );
+        console.log(response);
+        return response;
+    } catch (error) {
+        console.error('Error fetching users:', error);
         throw error;
     }
 }

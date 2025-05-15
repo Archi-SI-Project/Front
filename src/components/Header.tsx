@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import CityDto from '../assets/CityDto';
 import { getCities } from '../API';
+import { useAuth } from '../AuthContext';
+import { isAdmin } from '../global';
+import { useNavigate } from 'react-router-dom';
 
 type HeaderProps = {
     city: string;
@@ -19,6 +22,8 @@ type HeaderProps = {
 
 const Header: React.FC<HeaderProps> = ({ city, setCity, sessionDate, setSessionDate, genre, setGenre, duration, setDuration, creationDate, setCreationDate, searchTerm, setSearchTerm }) => {
     const [cityList, setCityList] = React.useState<CityDto[]>([]);
+    const { logout, token } = useAuth();
+    const navigate = useNavigate();
 
     useEffect(() => {
         getCities()
@@ -87,6 +92,8 @@ const Header: React.FC<HeaderProps> = ({ city, setCity, sessionDate, setSessionD
             <option value="horror">Horror</option>
             <option value="science fiction">Science Fiction</option>
             <option value="crime">Crime</option>
+            <option value="thriller">Thriller</option>
+            <option value="fantasy">Fantasy</option>
             </select>
 
             <select value={duration} onChange={(e) => setDuration(e.target.value)}>
@@ -118,6 +125,19 @@ const Header: React.FC<HeaderProps> = ({ city, setCity, sessionDate, setSessionD
             <button onClick={handleReset} style={{ padding: '0.5rem 1rem' }}>
             Reset
             </button>
+            <button
+                onClick={() => {
+                    if (token) {
+                        logout();
+                    } else {
+                        navigate('/login');
+                    }
+                }}
+                style={{ padding: '0.5rem 1rem' }}
+            >
+                {token ? 'Déconnexion' : 'Connexion'}
+            </button>
+            {isAdmin}
         </header>
     );
 };

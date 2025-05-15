@@ -19,7 +19,7 @@
     "@nextui-org/react": "^2.6.11",
     "axios": "^1.8.4",
     "dayjs": "^1.11.13",
-    "react": "^19.0.0",
+    "react": "^19.1.0",
     "react-day-picker": "^9.6.5",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.4.1"

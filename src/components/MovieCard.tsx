@@ -6,7 +6,7 @@ type MovieCardProps = {
     movie: {
         title: string;
         duration: number;
-        creation_date: Date;
+        creationDate: string | Date;
         image: string;
     };
 };
@@ -59,7 +59,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => {
                 margin: 0,
                 padding: '10px'
             }}>
-                {movie.creation_date.getFullYear()} - {movie.duration}min
+                {new Date(movie.creationDate)?.getFullYear()} - {movie.duration}min
             </p>
         </div>
     );

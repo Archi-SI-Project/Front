@@ -1,0 +1,42 @@
+-- Table Movie
+CREATE TABLE Movie (
+    id_movie SERIAL PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    duration INT NOT NULL, 
+    creation_date DATE NOT NULL,
+    language language_enum NOT NULL,
+    subtitle_language subtitle_enum,
+    director VARCHAR(100),
+    image BYTEA,
+    main_actors TEXT,
+    min_age SMALLINT,
+    synopsis TEXT,
+    genre VARCHAR(50)
+);
+
+-- Table City
+CREATE TABLE City (
+    id_city SERIAL PRIMARY KEY,
+    zip_code VARCHAR(10) NOT NULL
+    name VARCHAR(50)
+);
+
+-- Table MovieTheater
+CREATE TABLE MovieTheater (
+    id_movie_theater SERIAL PRIMARY KEY,
+    city_id INT,
+    address TEXT NOT NULL,
+    nom VARCHAR(100) NOT NULL,
+    FOREIGN KEY (city_id) REFERENCES City(id_city) ON DELETE SET NULL
+);
+
+-- Table Session
+CREATE TABLE Session (
+    id_session SERIAL PRIMARY KEY,
+    starting_time TIMESTAMP NOT NULL,
+    ending_time TIMESTAMP NOT NULL,
+    id_movie INT NOT NULL,
+    id_movie_theater INT NOT NULL,
+    FOREIGN KEY (id_movie) REFERENCES Movie(id_movie) ON DELETE CASCADE,
+    FOREIGN KEY (id_movie_theater) REFERENCES MovieTheater(id_movie_theater) ON DELETE CASCADE
+);

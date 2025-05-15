@@ -13,6 +13,7 @@ import 'react-day-picker/dist/style.css';
 import MovieTheaterDto from './assets/MovieTheaterDto';
 import MyDatePicker from './components/MyDatePicker';
 import { SessionDefinitionDto } from './assets/SessionDto';
+import { globalVariable, isAdmin, setGlobalVariable } from './global';
 
 const Home: React.FC = () => {
     const [moviesList, setMoviesList] = useState<MovieDto[]>([]);
@@ -35,9 +36,9 @@ const Home: React.FC = () => {
     const [textFieldMinAge, setTextFieldMinAge] = useState<string>("");
     const [textFieldSynopsis, setTextFieldSynopsis] = useState<string>("");
     const [textFieldGenre, setTextFieldGenre] = useState<string>("");
-    const [sessionSetters, setSessionSetters] = useState<SessionDefinitionDto[]>([{ id_movie_theater: 0, starting_time: new Date(), ending_time: new Date() }]);
+    const [sessionSetters, setSessionSetters] = useState<SessionDefinitionDto[]>([{ creationId: 0, idMovieTheater: 0, startingTime: new Date(), endingTime: new Date() }]);
     // const sessionSetters = useMemo(() => [
-    //     { movieTheater: "", startingDate: new Date(), endingDate: new Date() },
+    //     { movieTheater: "", startingTime: new Date(), endingTime: new Date() },
     // ], []);
 
     const handleOpenPopup = () => {
@@ -56,13 +57,13 @@ const Home: React.FC = () => {
         setTextFieldMinAge("");
         setTextFieldSynopsis("");
         setTextFieldGenre("");
-        setSessionSetters([{ id_movie_theater: 0, starting_time: new Date(), ending_time: new Date() }]);
+        setSessionSetters([{ creationId: 0, idMovieTheater: 0, startingTime: new Date(), endingTime: new Date() }]);
     };
 
     const addSession = () => {
         setSessionSetters([
             ...sessionSetters,
-            { id_movie_theater: 0, starting_time: new Date(), ending_time: new Date() }
+            { creationId: sessionSetters.length, idMovieTheater: 0, startingTime: new Date(), endingTime: new Date() }
         ]);
     }
 
@@ -71,21 +72,24 @@ const Home: React.FC = () => {
         const movie: MovieCreationDto = {
             title: textFieldTitle,
             duration: parseInt(textFieldDuration),
-            creation_date: new Date(textFieldCreationDate),
+            creationDate: (new Date(textFieldCreationDate)).toISOString().split('T')[0],
             language: textFieldLanguage,
             director: textFieldDirector,
             image: textFieldImage,
-            main_actors: textFieldMainActors.split(',').map(actor => actor.trim()),
-            min_age: parseInt(textFieldMinAge),
+            mainActors: textFieldMainActors,
+            minAge: parseInt(textFieldMinAge),
             synopsis: textFieldSynopsis,
             genre: textFieldGenre,
+            subtitleLanguage: "EN",
         };
-        addNewMovie(movie, sessionSetters);
+        const realSessionSetters = sessionSetters.slice(0, -1);
+        addNewMovie(movie, realSessionSetters);
     };
 
     useEffect(() => {
         getMovies()
             .then((data) => {
+                console.log(data);
                 setMoviesList(data);
             })
             .catch((error) => {
@@ -96,6 +100,7 @@ const Home: React.FC = () => {
     useEffect(() => {
         getMoviesWithFilter(city, sessionDate, genre, duration, creationDate, searchTerm)
             .then((data) => {
+                console.log(data);
                 setFilteredMovies(data);
             })
             .catch((error) => {
@@ -114,7 +119,14 @@ const Home: React.FC = () => {
     }, []);
 
     const goToMoviePage = (movieId: number) => {
-        window.location.href = `/movie/${movieId}`;
+        const params = new URLSearchParams();
+        if (city) params.set('city', city);
+        if (sessionDate) params.set('sessionDate', sessionDate);
+        if (genre) params.set('genre', genre);
+        if (duration) params.set('duration', duration);
+        if (creationDate) params.set('date', creationDate);
+        if (searchTerm) params.set('searchTerm', searchTerm);
+        window.location.href = `/movie/${movieId}?${params.toString()}`;
     };
 
     const updateURL = () => {
@@ -152,14 +164,16 @@ const Home: React.FC = () => {
                 />
                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '1rem' }}>
                     <h1 style={{ margin: 0, textAlign: 'center' }}>Movies</h1>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        style={{ marginLeft: '1rem' }}
-                        onClick={handleOpenPopup}
-                    >
-                        Publish Movie
-                    </Button>
+                    {isAdmin &&
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            style={{ marginLeft: '1rem' }}
+                            onClick={handleOpenPopup}
+                        >
+                            Publish Movie
+                        </Button>
+                    }
                 </div>
             </div>
             <div style={{ paddingTop: '150px' }} className="movie-list">
@@ -317,12 +331,13 @@ const Home: React.FC = () => {
                     {sessionSetters.map((sessionSetter) => (
                         <>
                         <select
-                            value={sessionSetter.id_movie_theater}
+                            value={sessionSetter.idMovieTheater}
                             onChange={(e) => {
+                                const updatedValue = Number(e.target.value);
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
-                                        setter === sessionSetter
-                                            ? { ...setter, movieTheater: Number(e.target.value) }
+                                        setter.creationId === sessionSetter.creationId
+                                            ? { ...setter, idMovieTheater: updatedValue }
                                             : setter
                                     )
                                 );
@@ -330,25 +345,25 @@ const Home: React.FC = () => {
                         >
                             <option value={0}>Select City</option>
                             {movieTheatersList.map((movieTheater) => (
-                                <option key={movieTheater.id_movie_theater} value={movieTheater.id_movie_theater}>
+                                <option key={movieTheater.idMovieTheater} value={movieTheater.idMovieTheater}>
                                     {movieTheater.name} ({movieTheater.address})
                                 </option>
                             ))}
                         </select>
-                        <MyDatePicker date={sessionSetter.starting_time} changeDate={(e) => {
+                        <MyDatePicker date={sessionSetter.startingTime} changeDate={(e) => {
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
-                                        setter === sessionSetter
-                                            ? { ...setter, startingDate: e }
+                                        setter.creationId === sessionSetter.creationId
+                                            ? { ...setter, startingTime: e }
                                             : setter
                                     )
                                 );
                             }} />
-                        <MyDatePicker date={sessionSetter.ending_time} changeDate={(e) => {
+                        <MyDatePicker date={sessionSetter.endingTime} changeDate={(e) => {
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
-                                        setter === sessionSetter
-                                            ? { ...setter, endingDate: e }
+                                        setter.creationId === sessionSetter.creationId
+                                            ? { ...setter, endingTime: e }
                                             : setter
                                     )
                                 );
