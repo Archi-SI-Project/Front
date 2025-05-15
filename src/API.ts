@@ -1,6 +1,6 @@
 import axios from 'axios';
 import MovieDto, { MovieCreationDto } from './assets/MovieDto';
-import SessionDto, { SessionCreationDto, SessionDefinitionDto } from './assets/SessionDto';
+import SessionDto, { SessionAddToDbDto, SessionCreationDto, SessionDefinitionDto } from './assets/SessionDto';
 import CityDto from './assets/CityDto';
 import MockData from './MockData.json';
 import MovieTheaterDto from './assets/MovieTheaterDto';
@@ -238,7 +238,8 @@ export async function createMovie(movie: MovieCreationDto): Promise<number> {
         //     subtitleLanguage: "EN"
         // });
         const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/movies/add`, movie);
-        return response.data.id;
+        console.log(response);
+        return response.data;
     } catch (error) {
         console.error('Error creating movie:', error);
         throw error;
@@ -269,7 +270,14 @@ export async function updateMovie(movieId: number, movie: MovieDto): Promise<voi
 
 export async function createSession(session: SessionCreationDto): Promise<void> {
     try {
-        const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/session/add`, session);
+        console.log(session);
+        const sessionTransformed: SessionAddToDbDto = {
+            ...session,
+            idMovie: { id: session.idMovie },
+            idMovieTheater: { id: session.idMovieTheater }
+        };
+        console.log(sessionTransformed);
+        const response = await axiosInstance.post(`${BASE_URL_SERVICE2}/session/add`, sessionTransformed);
         return response.data;
     } catch (error) {
         console.error('Error creating movie:', error);
@@ -285,6 +293,7 @@ export async function addNewMovie(movie: MovieCreationDto, sessions: SessionDefi
         let movieExisting = null;
         while (!movieExisting) {
             try {
+                console.log('getMovieById', movieId);
                 movieExisting = await getMovieById(movieId);
             } catch (error) {
                 if (axios.isAxiosError(error) && error.response?.status === 404) {
@@ -295,6 +304,8 @@ export async function addNewMovie(movie: MovieCreationDto, sessions: SessionDefi
                 }
             }
         }
+        console.log('movieExisting', movieExisting);
+        console.log('movieId', movieId);
         const movieSessions: SessionCreationDto[] = sessions.map(({ creationId, ...session }) => ({
             ...session,
             idMovie: movieId,

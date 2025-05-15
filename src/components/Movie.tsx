@@ -57,6 +57,7 @@ const Movie: React.FC = () => {
     const handleOpenModifyPopup = () => {
         setTextFieldTitle(movie?.title || "");
         setTextFieldDuration(movie?.duration.toString() || "");
+        console.log(movie?.creationDate);
         setTextFieldCreationDate(new Date(movie?.creationDate || ""));
         setTextFieldLanguage(movie?.language || "");
         setTextFieldDirector(movie?.director || "");
@@ -128,7 +129,17 @@ const Movie: React.FC = () => {
             genre: textFieldGenre,
             subtitleLanguage: "EN",
         };
-        updateMovie(movieId, movie);
+        updateMovie(movieId, movie)
+        .then(() => {
+            // Recharge les infos du film après modification
+            return getMovieById(movieId);
+        })
+        .then((data) => {
+            setMovie(data);
+        })
+        .catch((error) => {
+            console.error(error);
+        });
     };
 
     if (!movie) {
@@ -271,7 +282,7 @@ const Movie: React.FC = () => {
             </Dialog>
 
             <Dialog open={isModifyPopupOpen} onClose={handleCloseModifyPopup}>
-                <DialogTitle>Publish Movie</DialogTitle>
+                <DialogTitle>Modify Movie</DialogTitle>
                 <DialogContent>
                     <TextField
                         margin="dense"

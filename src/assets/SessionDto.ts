@@ -13,6 +13,13 @@ export interface SessionCreationDto {
     idMovieTheater: number;
 }
 
+export interface SessionAddToDbDto {
+    startingTime: Date;
+    endingTime: Date;
+    idMovie: {id: number};
+    idMovieTheater: {id: number};
+}
+
 export interface SessionDefinitionDto {
     creationId: number;
     startingTime: Date;
