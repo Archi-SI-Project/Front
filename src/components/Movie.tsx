@@ -235,8 +235,8 @@ const Movie: React.FC = () => {
                                 onChange={(e) => {
                                     setSessionSetters((prev) =>
                                         prev.map((setter) =>
-                                            setter === sessionSetter
-                                                ? { ...setter, movieTheater: Number(e.target.value) }
+                                            setter.creationId === sessionSetter.creationId
+                                                ? { ...setter, idMovieTheater: Number(e.target.value) }
                                                 : setter
                                         )
                                     );
@@ -252,7 +252,7 @@ const Movie: React.FC = () => {
                             <MyDatePicker date={sessionSetter.startingTime} changeDate={(e) => {
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
-                                        setter === sessionSetter
+                                        setter.creationId === sessionSetter.creationId
                                             ? { ...setter, startingTime: e }
                                             : setter
                                     )
@@ -261,7 +261,7 @@ const Movie: React.FC = () => {
                             <MyDatePicker date={sessionSetter.endingTime} changeDate={(e) => {
                                 setSessionSetters((prev) =>
                                     prev.map((setter) =>
-                                        setter === sessionSetter
+                                        setter.creationId === sessionSetter.creationId
                                             ? { ...setter, endingTime: e }
                                             : setter
                                     )
