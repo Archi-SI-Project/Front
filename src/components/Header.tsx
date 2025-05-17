@@ -68,21 +68,21 @@ const Header: React.FC<HeaderProps> = ({ city, setCity, sessionDate, setSessionD
             paddingLeft: '2rem',
             paddingRight: '2rem'
         }}>
-            <select value={city} onChange={(e) => setCity(e.target.value)}>
+            {/* <select value={city} onChange={(e) => setCity(e.target.value)}>
                 <option value="">Select City</option>
                 {cityList.map((city) => (
                     <option key={city.postalCode} value={city.postalCode}>
                         {city.name} ({city.postalCode})
                     </option>
                 ))}
-            </select>
+            </select> */}
 
-            <select value={sessionDate} onChange={(e) => setSessionDate(e.target.value)}>
+            {/* <select value={sessionDate} onChange={(e) => setSessionDate(e.target.value)}>
             <option value="">All</option>
             <option value="ended">Ended</option>
             <option value="current">Current</option>
             <option value="upcoming">Upcoming</option>
-            </select>
+            </select> */}
 
             <select value={genre} onChange={(e) => setGenre(e.target.value)}>
             <option value="">Select Genre</option>
