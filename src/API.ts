@@ -9,7 +9,7 @@ const BASE_URL = '/api';
 
 const axiosInstance = axios.create({
     baseURL: '',
-    headers: {
+        headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
     },
